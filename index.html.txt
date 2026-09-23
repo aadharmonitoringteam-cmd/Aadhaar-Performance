@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>लाइव ट्रांजेक्शन डैशबोर्ड FY 26-27</title>
+    <!-- Tailwind CSS (Modern Styling) -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- Chart.js (Analytics Graphs) -->
+    <script src="https://jsdelivr.net"></script>
+    <style>
+        @import url('https://googleapis.com');
+        body { font-family: 'Noto Sans Devanagari', sans-serif; }
+        .chart-container { position: relative; height: 320px; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- नेविगेशन बार (Navbar) -->
+    <nav class="bg-indigo-900 text-white shadow-md px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight">📊 ट्रांजेक्शन एनालिटिक्स डैशबोर्ड</h1>
+            <p class="text-indigo-200 text-sm font-medium">वित्तीय वर्ष 2026-2027 कार्यप्रदर्शन रिपोर्ट</p>
+        </div>
+        <div class="bg-indigo-800 px-5 py-2 rounded-lg border border-indigo-700 text-center">
+            <span class="text-xs text-indigo-300 block uppercase font-semibold tracking-wider">कुल ट्रांजेक्शन (Grand Total)</span>
+            <span class="text-xl font-extrabold text-emerald-400">4,28,924</span>
+        </div>
+    </nav>
+
+    <!-- मुख्य कंटेंट (Main Layout) -->
+    <main class="max-w-7xl mx-auto p-4 lg:p-6 space-y-6">
+
+        <!-- टॉप हाइलाइट्स (Metrics Cards) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-xs border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">सर्वश्रेष्ठ डिवीज़न</span>
+                    <span class="text-2xl font-bold text-slate-800">Ratlam (रतलाम)</span>
+                </div>
+                <div class="mt-4 text-sm font-semibold text-emerald-600 bg-emerald-50 py-1.5 px-3 rounded-md w-fit">
+                    80,107 ट्रांजेक्शन
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-xs border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">सर्वोच्च प्रदर्शन केंद्र</span>
+                    <span class="text-2xl font-bold text-slate-800">Ratlam H.O I</span>
+                </div>
+                <div class="mt-4 text-sm font-semibold text-indigo-600 bg-indigo-50 py-1.5 px-3 rounded-md w-fit">
+                    9,293 ट्रांजेक्शन
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-xs border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block mb-1">कुल ट्रैक किए गए केंद्र</span>
+                    <span class="text-2xl font-bold text-slate-800">142 सेंटर्स</span>
+                </div>
+                <div class="mt-4 text-sm font-semibold text-amber-600 bg-amber-50 py-1.5 px-3 rounded-md w-fit">
+                    8 डिवीजनों के अंतर्गत
+                </div>
+            </div>
+        </div>
+
+        <!-- चार्ट्स सेक्शन (Charts Section) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- बार चार्ट -->
+            <div class="bg-white p-6 rounded-xl shadow-xs border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">डिवीज़न-वार कुल ट्रांजेक्शन (Division-wise share)</h3>
+                <div class="chart-container">
+                    <canvas id="divisionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- लाइन चार्ट -->
+            <div class="bg-white p-6 rounded-xl shadow-xs border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">मासिक ट्रांजेक्शन ट्रेंड (अप्रैल 26 - सितंबर 26)</h3>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- डेटा टेबल (Searchable Table) -->
+        <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">विस्तृत प्रदर्शन तालिका (Center Ledger)</h3>
+                    <p class="text-slate-400 text-xs mt-0.5">सर्च बार का उपयोग करके किसी भी सेंटर या डिवीज़न का डेटा खोजें।</p>
+                </div>
+                <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="सेंटर या डिवीज़न का नाम खोजें..." class="w-full sm:w-72 px-4 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500 shadow-inner">
+            </div>
+
+            <div class="overflow-x-auto max-h-96">
+                <table class="w-full text-left border-collapse" id="dataTable">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold sticky top-0 shadow-xs z-10">
+                            <th class="p-4 bg-slate-100">क्र.सं.</th>
+                            <th class="p-4 bg-slate-100">केंद्र का नाम (Centre)</th>
+                            <th class="p-4 bg-slate-100">डिवीज़न (Division)</th>
+                            <th class="p-4 bg-slate-100">अप्रैल-26</th>
+                            <th class="p-4 bg-slate-100">मई-26</th>
+                            <th class="p-4 bg-slate-100">जून-26</th>
+                            <th class="p-4 bg-slate-100">जुलाई-26</th>
+                            <th class="p-4 bg-slate-100">अगस्त-26</th>
+                            <th class="p-4 bg-slate-100">सितंबर-26</th>
+                            <th class="p-4 bg-slate-100 text-right">कुल ट्रांजेक्शन</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm text-slate-600 font-medium" id="tableBody">
+                        <!-- यहाँ जावास्क्रिप्ट से डेटा इन्जेक्ट होगा -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- जावास्क्रिप्ट लॉजिक (डेटा प्रोसेसिंग) -->
+    <script>
+        // आपके CSV का संकलित डेटा (Division Summary)
+        const divisionsData = {
+            labels: ['Ratlam', 'Khandwa', 'Mandsaur', 'Ujjain', 'Indore City', 'Indore Mfl', 'Sehore', 'Indore RMS'],
+            values: [80107, 70960, 67725, 62853, 56213, 46170, 43434, 1462]
+        };
+
+        // मासिक कुल योग ट्रेंड
+        const monthlyTrend = {
+            labels: ['अप्रैल 2026', 'मई 2026', 'जून 2026', 'जुलाई 2026', 'अगस्त 2026', 'सितंबर 2026 (21 तक)'],
+            values: [51008, 68148, 85456, 98941, 76229, 49142]
+        };
+
+        // आपके द्वारा दी गई पूरी सेंटर लिस्ट (142 सेंटर्स)
+        const centerRows = [
+            ["1","Indore G.P.O.","Indore City","880","872","1126","920","726","509","5033"],
+            ["2","Indore Nagar H.O","Indore City","731","686","806","806","803","554","4386"],
+            ["3","Vijay Nagar S.O","Indore City","928","1012","1126","1126","942","476","5610"],
+            ["4","Army Head Quarter S.O","Indore City","661","674","630","118","418","304","2805"],
+            ["5","Indore Tillaknagar S.O","Indore City","369","400","669","570","400","359","2767"],
+            ["6","Khatiwala Tank S.O","Indore City","218","227","290","481","395","239","1850"],
+            ["7","Bijasan Road S.O","Indore City","298","563","639","639","341","353","2833"],
+            ["8","Indore City 2 S.O","Indore City","168","658","833","920","547","394","3520"],
+            ["9","Nanda Nagar S.O","Indore City","417","397","441","503","503","222","2483"],
+            ["10","Rajendra Nagar S.O (Indore)","Indore City","347","439","273","273","374","304","2010"],
+            ["11","Vallabhnagar S.O (Indore)","Indore City","232","319","509","509","195","198","1962"],
+            ["12","Indore Kanadia Road S.O","Indore City","431","576","827","904","522","216","3476"],
+            ["13","Sudama Nagar S.O","Indore City","703","674","663","926","544","370","3880"],
+            ["14","Lokmanya Nagar Indore S.O","Indore City","352","441","440","440","285","121","2079"],
+            ["15","Indore G.P.O. 2","Indore City","764","795","927","927","693","358","4464"],
+            ["16","Indore R.S.S.Nagar S.O","Indore City","35","68","166","169","0","0","438"],
+            ["17","Indore Manorama G S.O","Indore City","25","55","158","158","94","180","670"],
+            ["18","Indore Collectorate S.O","Indore City","42","50","35","35","0","0","162"],
+            ["19","Industrial Estate S.O (Indore)","Indore City","398","418","604","516","386","276","2598"],
+            ["20","Gurunanak Chauk S.O","Indore City","80","216","345","727","564","48","1980"],
+            ["21","Indore Nagar H.O 2","Indore City","17","89","502","502","46","51","1207"],
+            ["22","Dewas H.O","Indore Mfl","698","959","1144","1207","1002","633","5643"],
+            ["23","Sonkutch S.O","Indore Mfl","191","330","336","395","347","204","1803"],
+            ["24","Dhar H.O","Indore Mfl","550","1018","1139","1147","678","429","4961"],
+            ["25","Badnawar S.O","Indore Mfl","265","0","124","150","675","417","1631"],
+            ["26","Rajgarh (Dhar) S.O","Indore Mfl","435","741","782","803","593","337","3691"],
+            ["27","Sardarpur S.O (Dhar)","Indore Mfl","142","332","471","505","252","215","1917"],
+            ["28","Sanwer S.O","Indore Mfl","130","270","300","371","105","112","1288"],
+["29","Pithampur S.O","Indore Mfl","256","335","532","546","448","308","2425"],
+["30","Pithampur Sector III S.O","Indore Mfl","323","479","572","580","557","351","2862"],
+["31","Depalpur S.O","Indore Mfl","0","169","159","313","264","181","1086"],
+["32","Kasturbagram S.O","Indore Mfl","80","12","271","328","374","183","1248"],
+["33","Manglia S.O","Indore Mfl","248","347","400","414","441","252","2102"],
+["34","Rao S.O","Indore Mfl","54","77","394","441","358","300","1624"],
+["35","Hatpipliya S.O","Indore Mfl","36","205","157","204","319","149","1070"],
+["36","Kannod S.O","Indore Mfl","119","193","413","430","357","271","1783"],
+["37","Khategaon S.O","Indore Mfl","47","372","352","469","280","265","1785"],
+["38","Bagli S.O","Indore Mfl","0","0","0","0","0","30","30"],
+["39","Manawar S.O","Indore Mfl","172","284","416","472","219","176","1739"],
+["40","Mhow S.O","Indore Mfl","620","381","677","748","741","323","3490"],
+["41","Dhamnod S.O","Indore Mfl","29","121","171","252","316","247","1136"],
+["42","Kukshi S.O","Indore Mfl","346","573","589","660","413","275","2856"],
+["43","RMS Indore","Indore RMS","188","146","470","480","169","9","1462"],
+["44","KHANDWA HO","Khandwa","1087","1170","1378","1927","1584","1069","8215"],
+["45","BURHANPUR MDG","Khandwa","584","744","969","1195","1010","672","5174"],
+["46","KHARGONE HO","Khandwa","787","1121","1354","1712","1204","873","7051"],
+["47","BHIKANGAON SO","Khandwa","543","810","942","1106","860","599","4860"],
+["48","NEPANAGAR SO","Khandwa","430","479","456","657","468","228","2718"],
+["49","BARWANI MDG","Khandwa","377","621","753","828","798","567","3944"],
+["50","PANDHANA SO","Khandwa","353","449","645","667","522","366","3002"],
+["51","BARWAHA SO","Khandwa","449","498","746","849","766","377","3685"],
+["52","SANAWAD SO","Khandwa","445","472","635","631","435","195","2813"],
+["53","SENDHWA SO","Khandwa","452","572","662","650","488","408","3232"],
+["54","MANDLESHWAR SO","Khandwa","327","358","477","622","719","254","2757"],
+["55","ANJAD SO","Khandwa","131","282","313","126","441","188","1481"],
+["56","VIDHYA NAGAR KHANDWA SO","Khandwa","231","291","365","320","228","469","1904"],["57","KASRAWAD SO","Khandwa","430","409","421","572","708","393","2933"],["58","NAYA HARSUD SO","Khandwa","281","492","787","867","534","392","3353"],["59","RATAGARH KHANDWA SO","Khandwa","480","503","654","642","526","312","3117"],["60","RAJPUR BARWANI SO","Khandwa","541","733","494","579","370","363","3080"],["61","THIKARI SO","Khandwa","181","402","395","387","318","223","1906"],["62","BEDIA SO","Khandwa","476","703","696","897","561","391","3724"],["63","MAHESHWAR SO","Khandwa","96","252","371","625","405","262","2011"],["64","Suwasara Mandi S.O","Mandsaur","407","422","576","717","214","229","2565"],["65","Bhanpura S.O","Mandsaur","411","519","713","644","687","427","3401"],["66","Garoth S.O","Mandsaur","575","743","1041","1053","874","638","4924"],["67","Shamgarh S.O","Mandsaur","162","560","760","1159","785","478","3904"],["68","GURADIA DEDA BO","Mandsaur","200","118","297","648","262","142","1667"],["69","Mandsaur H.O","Mandsaur","805","898","836","1114","958","591","5202"],["70","Mandsaur City S.O 1","Mandsaur","798","833","1030","1290","834","673","5458"],["71","Dalauda S.O","Mandsaur","446","645","855","842","553","436","3777"],["72","Nahargarh S.O","Mandsaur","546","680","773","1023","731","467","4220"],["73","Sitamau S.O","Mandsaur","422","600","670","850","751","438","3731"],["74","Budha SO","Mandsaur","185","304","473","628","356","271","2217"],["75","Neemuch H.O","Mandsaur","278","552","690","836","737","497","3590"],["76","Jawad S.O","Mandsaur","261","296","466","585","457","234","2299"],["77","Khor S.O","Mandsaur","224","257","340","357","293","158","1629"],["78","Baghana Neemuch S.O","Mandsaur","216","217","283","364","327","165","1572"],["79","Neemuch Ghanta Ghar S.O","Mandsaur","631","483","512","650","526","301","3103"],["80","Malhargarh S.O","Mandsaur","328","371","461","710","438","291","2599"],["81","Piplia S.O","Mandsaur","355","460","673","970","667","403","3528"],["82","Manasa S.O","Mandsaur","312","407","575","743","541","267","2845"],["83","Mahagarh S.O","Mandsaur","194","265","266","353","263","165","1506"],["84","Rampura S.O (Neemuch)","Mandsaur","410","502","782","919","829","546","3988"],["85","Alirajpur S.O","Ratlam","375","1110","1100","916","725","655","4881"],["86","Alote S.O","Ratlam","494","612","756","398","542","325","3127"],["87","Bamnia S.O","Ratlam","505","619","730","989","557","373","3773"],["88","Kalukheda S.O","Ratlam","265","464","495","619","427","226","2496"],["89","Jaora S.O","Ratlam","617","1008","1114","1003","881","548","5171"],["90","Jhabua H.O","Ratlam","1424","1535","1762","1744","1419","996","8880"],["91","Jobat S.O","Ratlam","370","802","978","1292","801","500","4743"],["92","Meghnagar S.O","Ratlam","304","379","549","558","356","240","2386"],["93","Namli S.O","Ratlam","322","519","823","846","556","161","3227"],["94","Petlawad S.O","Ratlam","696","933","1055","1213","834","514","5245"],["95","Ranapur S.O","Ratlam","719","838","729","823","776","510","4395"],["96","Ratlam Collectorate S.O","Ratlam","395","720","1040","1021","851","284","4311"],["97","Ratlam H.O I","Ratlam","1477","1722","1816","1876","1372","1030","9293"],["98","Ratlam HO II","Ratlam","441","548","421","460","277","105","2252"],["99","Sailana S.O","Ratlam","543","637","959","1017","809","564","4529"],["100","Shivpur B.O","Ratlam","358","434","573","663","439","262","2729"],["101","Tal S.O","Ratlam","726","700","1076","1116","680","580","4878"],["102","Thandla S.O","Ratlam","304","717","876","847","545","502","3791"],["103","Sehore HO","Sehore","372","514","756","951","744","499","3836"],["104","Rajgarh (Bia) HO ","Sehore","671","949","1036","1274","1135","783","5848"],["105","Biaora MDG","Sehore","391","877","1054","1118","877","549","4866"],["106","NarsinghGarh SO","Sehore","316","629","527","821","596","418","3307"],["107","Ashta SO","Sehore","200","336","427","705","666","433","2767"],["108","Nasrullaganj SO","Sehore","153","276","420","509","489","304","2151"],["109","Ichhawar SO","Sehore","203","274","440","607","449","259","2232"],["110","Sehore city SO","Sehore","140","182","422","505","379","311","1939"],["111","Sarangpur SO","Sehore","61","252","536","526","577","278","2230"],["112","Pachore SO","Sehore","345","497","705","901","641","353","3442"],["113","Rehti SO","Sehore","59","322","552","716","461","322","2432"],["114","Kurawar SO","Sehore","152","346","636","586","450","403","2573"],["115","Khilchipur SO","Sehore","0","0","69","742","509","342","1662"],["116","Zirapur SO","Sehore","84","126","467","715","556","334","2282"],["117","Khujner SO","Sehore","66","153","0","80","188","75","562"],["118","Budni SO ","Sehore","92","168","260","363","242","180","1305"],["119","Ujjain HO","Ujjain","853","839","806","1040","740","225","4503"],["120","Shajapur HO","Ujjain","530","699","699","825","815","446","4014"],["121","Barnagar SO","Ujjain","682","520","706","884","700","220","3712"],["122","Birlagram(Nagda) SO","Ujjain","226","273","402","560","336","122","1919"],["123","Nagda  SO","Ujjain","398","495","629","621","589","495","3227"],["124","Ujjain City SO","Ujjain","414","403","426","616","349","370","2578"],["125","Ujjain M.L.Nagar SO","Ujjain","269","274","693","911","822","205","3174"],["126","Ujjain Madhonagar SO","Ujjain","424","633","741","941","477","295","3511"],["127","Agar malwa SO","Ujjain","419","683","685","760","661","184","3392"],["128","Shujalpur Mandi SO","Ujjain","246","257","399","436","289","236","1863"],["129","Khachraud sO","Ujjain","171","338","581","717","531","349","2687"],["130","Mehidpur SO","Ujjain","212","444","468","491","327","237","2179"],["131","Tarana SO","Ujjain","416","576","611","867","727","275","3472"],["132","Kalapipal SO","Ujjain","109","327","375","575","606","135","2127"],["133","Baledi SO","Ujjain","228","205","434","490","274","174","1805"],["134","Unhel SO","Ujjain","32","106","326","359","374","361","1558"],["135","Ujjain HO 2","Ujjain","686","463","739","834","850","386","3958"],["136","Ujjain Kothi SO","Ujjain","140","302","120","294","100","360","1316"],["137","Akodia SO","Ujjain","104","168","249","263","254","112","1150"],["138","Berchha SO","Ujjain","169","336","348","617","467","432","2369"],["139","Maksi SO","Ujjain","136","321","414","608","533","289","2301"],["140","Nalkheda SO","Ujjain","225","284","333","392","302","590","2126"],["141","Ujjain Gujrati Samaj SO","Ujjain","291","318","434","658","455","338","2494"],["142","Susner SO","Ujjain","116","220","216","264","131","471","1418"]];// टेबल पॉप्युलेट करने का फंक्शनconst tBody = document.getElementById('tableBody');function populateTable(rowsData) {tBody.innerHTML = '';rowsData.forEach(row => {const tr = document.createElement('tr');tr.className = "hover:bg-slate-50 border-b border-slate-100 transition-colors duration-150";tr.innerHTML = `${row}${row}${row}${row}${row}${row}${row}${row}${row}${row}`;tBody.appendChild(tr);});}populateTable(centerRows);// सर्च फ़िल्टर मैकेनिज्मfunction filterTable() {const query = document.getElementById('tableSearch').value.toLowerCase();const filtered = centerRows.filter(row =>row[1].toLowerCase().includes(query) || row[2].toLowerCase().includes(query));populateTable(filtered);}// बार चार्ट (Division Performance)new Chart(document.getElementById('divisionChart'), {type: 'bar',data: {labels: divisionsData.labels,datasets: [{label: 'कुल ट्रांजेक्शन',data: divisionsData.values,backgroundColor: 'rgba(79, 70, 229, 0.85)',borderRadius: 6}]},options: { responsive: true, maintainAspectRatio: false }});// लाइन चार्ट (Monthly Trend)new Chart(document.getElementById('trendChart'), {type: 'line',data: {labels: monthlyTrend.labels,datasets: [{label: 'मासिक विकास वॉल्यूम',data: monthlyTrend.values,borderColor: 'rgb(16, 185, 129)',backgroundColor: 'rgba(16, 185, 129, 0.1)',fill: true,tension: 0.3}]},options: { responsive: true, maintainAspectRatio: false }});
